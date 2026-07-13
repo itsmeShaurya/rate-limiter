@@ -6,5 +6,5 @@ server:
   port: 8081
 
 rate-limiter:
-  max-requests:5
-  window-size-seconds:60
+  max-requests: 5
+  window-size-seconds: 60

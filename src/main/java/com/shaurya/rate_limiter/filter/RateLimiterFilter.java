@@ -1,6 +1,7 @@
 package com.shaurya.rate_limiter.filter;
 
-import com.shaurya.rate_limiter.service.RateLimiterService;
+import com.shaurya.rate_limiter.service.FixedWindowRateLimiter;
+import com.shaurya.rate_limiter.strategy.RateLimiter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,10 +14,10 @@ import java.io.IOException;
 @Component
 public class RateLimiterFilter extends OncePerRequestFilter {
 
-    private RateLimiterService rateLimiterService;
+    private final RateLimiter rateLimiter;
 
-    public RateLimiterFilter(RateLimiterService rateLimiterService) {
-        this.rateLimiterService = rateLimiterService;
+    public RateLimiterFilter(RateLimiter rateLimiter) {
+        this.rateLimiter = rateLimiter;
     }
 
     @Override
@@ -30,7 +31,7 @@ public class RateLimiterFilter extends OncePerRequestFilter {
             return;
         }
 
-        boolean allowed = rateLimiterService.allowRequests(userId);
+        boolean allowed = rateLimiter.allowRequests(userId);
 
         if(!allowed){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);

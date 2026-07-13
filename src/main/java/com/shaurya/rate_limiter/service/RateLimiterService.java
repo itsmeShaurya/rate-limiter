@@ -19,21 +19,25 @@ public class RateLimiterService {
 
     private final Map<String, UserBucket> userBuckets = new ConcurrentHashMap<>();
 
-    public boolean allowRequests(String userId){
+    public boolean allowRequests(String userId) {
         UserBucket bucket = userBuckets.computeIfAbsent(userId, key -> new UserBucket());
 
-        long currentTime = System.currentTimeMillis();
-        long windowSizeMillis = rateLimiterProperties.getWindowSizeSeconds() * 1000;
+        synchronized (bucket) {
 
-        if(currentTime - bucket.getWindowTime() >= windowSizeMillis){
-            bucket.setRequestCount(0);
-            bucket.setWindowTime(currentTime);
-        }
+            long currentTime = System.currentTimeMillis();
+            long windowSizeMillis = rateLimiterProperties.getWindowSizeSeconds() * 1000;
 
-        if(bucket.getRequestCount() < rateLimiterProperties.getMaxRequests()){
-            bucket.setRequestCount(bucket.getRequestCount() + 1);
-            return true;
+            if (currentTime - bucket.getWindowStartTime() >= windowSizeMillis) {
+                bucket.getRequestCount().set(0);
+                bucket.setWindowStartTime(currentTime);
+            }
+
+            if (bucket.getRequestCount().get() < rateLimiterProperties.getMaxRequests()) {
+                bucket.getRequestCount().incrementAndGet();
+                return true;
+            }
+            return false;
+
         }
-        return false;
     }
 }

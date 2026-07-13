@@ -1,27 +1,20 @@
 package com.shaurya.rate_limiter.model;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class UserBucket {
-    private int requestCount;
-    private long windowTime;
+    private final AtomicInteger requestCount = new AtomicInteger(0);
+    private volatile long windowStartTime = System.currentTimeMillis();
 
-    public UserBucket() {
-        this.requestCount = requestCount;
-        this.windowTime = windowTime;
-    }
-
-    public int getRequestCount() {
+    public AtomicInteger getRequestCount() {
         return requestCount;
     }
 
-    public void setRequestCount(int requestCount) {
-        this.requestCount = requestCount;
+    public long getWindowStartTime() {
+        return windowStartTime;
     }
 
-    public long getWindowTime() {
-        return windowTime;
-    }
-
-    public void setWindowTime(long windowTime) {
-        this.windowTime = windowTime;
+    public void setWindowStartTime(long windowStartTime) {
+        this.windowStartTime = windowStartTime;
     }
 }

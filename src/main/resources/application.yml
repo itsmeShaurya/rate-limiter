@@ -8,3 +8,4 @@ server:
 rate-limiter:
   max-requests: 5
   window-size-seconds: 60
+  algorithm: fixed-window

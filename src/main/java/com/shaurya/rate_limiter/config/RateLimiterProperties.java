@@ -7,6 +7,7 @@ public class RateLimiterProperties {
 
     private int maxRequests;
     private long windowSizeSeconds;
+    private String algorithm;
 
     public int getMaxRequests() {
         return maxRequests;
@@ -22,5 +23,13 @@ public class RateLimiterProperties {
 
     public void setWindowSizeSeconds(long windowSizeSeonds) {
         this.windowSizeSeconds = windowSizeSeonds;
+    }
+
+    public String getAlgorithm() {
+        return algorithm;
+    }
+
+    public void setAlgorithm(String algorithm) {
+        this.algorithm = algorithm;
     }
 }

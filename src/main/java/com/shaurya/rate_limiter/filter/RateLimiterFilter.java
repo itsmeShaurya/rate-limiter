@@ -1,6 +1,5 @@
 package com.shaurya.rate_limiter.filter;
 
-import com.shaurya.rate_limiter.service.FixedWindowRateLimiter;
 import com.shaurya.rate_limiter.strategy.RateLimiter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

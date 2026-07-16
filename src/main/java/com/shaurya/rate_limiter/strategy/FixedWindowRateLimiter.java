@@ -1,9 +1,8 @@
-package com.shaurya.rate_limiter.service;
+package com.shaurya.rate_limiter.strategy;
 
 
 import com.shaurya.rate_limiter.config.RateLimiterProperties;
-import com.shaurya.rate_limiter.model.UserBucket;
-import com.shaurya.rate_limiter.strategy.RateLimiter;
+import com.shaurya.rate_limiter.model.fixedwindow.FixedWindowBucket;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -12,17 +11,17 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 public class FixedWindowRateLimiter implements RateLimiter {
 
-    private RateLimiterProperties rateLimiterProperties;
+    private final RateLimiterProperties rateLimiterProperties;
 
     public FixedWindowRateLimiter(RateLimiterProperties rateLimiterProperties) {
         this.rateLimiterProperties = rateLimiterProperties;
     }
 
-    private final Map<String, UserBucket> userBuckets = new ConcurrentHashMap<>();
+    private final Map<String, FixedWindowBucket> userBuckets = new ConcurrentHashMap<>();
 
     @Override
     public boolean allowRequests(String userId) {
-        UserBucket bucket = userBuckets.computeIfAbsent(userId, key -> new UserBucket());
+        FixedWindowBucket bucket = userBuckets.computeIfAbsent(userId, key -> new FixedWindowBucket());
 
         synchronized (bucket) {
 

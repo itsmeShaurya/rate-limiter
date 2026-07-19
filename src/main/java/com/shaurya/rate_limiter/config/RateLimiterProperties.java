@@ -8,6 +8,8 @@ public class RateLimiterProperties {
     private int maxRequests;
     private long windowSizeSeconds;
     private String algorithm;
+    private int bucketCapacity;
+    private double refillRate;
 
     public int getMaxRequests() {
         return maxRequests;
@@ -31,5 +33,21 @@ public class RateLimiterProperties {
 
     public void setAlgorithm(String algorithm) {
         this.algorithm = algorithm;
+    }
+
+    public int getBucketCapacity() {
+        return bucketCapacity;
+    }
+
+    public void setBucketCapacity(int bucketCapacity) {
+        this.bucketCapacity = bucketCapacity;
+    }
+
+    public double getRefillRate() {
+        return refillRate;
+    }
+
+    public void setRefillRate(double refillRate) {
+        this.refillRate = refillRate;
     }
 }

@@ -8,4 +8,6 @@ server:
 rate-limiter:
   max-requests: 5
   window-size-seconds: 60
-  algorithm: sliding-window
+  algorithm: token-window
+  bucket-capacity: 5
+  refill-rate: 0.2

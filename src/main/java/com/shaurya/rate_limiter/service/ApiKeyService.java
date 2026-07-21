@@ -35,4 +35,8 @@ public class ApiKeyService {
     public Optional<User> getUserByApiKey(String apikey){
         return userRepository.findByApiKey(apikey);
     }
+
+    public User validApiKey(String apiKey){
+        return userRepository.findByApiKey(apiKey).orElseThrow(() -> new RuntimeException("Invalid API Key"));
+    }
 }

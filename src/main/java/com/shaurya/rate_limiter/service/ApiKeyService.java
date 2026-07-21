@@ -1,6 +1,8 @@
 package com.shaurya.rate_limiter.service;
 
 import com.shaurya.rate_limiter.entity.User;
+import com.shaurya.rate_limiter.exception.InvalidApiKeyException;
+import com.shaurya.rate_limiter.exception.UserAlreadyExistsException;
 import com.shaurya.rate_limiter.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
@@ -20,7 +22,7 @@ public class ApiKeyService {
     public User createUser(String username){
         // Check if the username already exists.
         if(userRepository.findByUsername(username).isPresent()){
-            throw new RuntimeException("Username already exists.");
+            throw new UserAlreadyExistsException("Username already exists.");
         }
 
         User user = new User();
@@ -37,6 +39,6 @@ public class ApiKeyService {
     }
 
     public User validApiKey(String apiKey){
-        return userRepository.findByApiKey(apiKey).orElseThrow(() -> new RuntimeException("Invalid API Key"));
+        return userRepository.findByApiKey(apiKey).orElseThrow(() -> new InvalidApiKeyException("Invalid API Key"));
     }
 }

@@ -1,6 +1,7 @@
 package com.shaurya.rate_limiter.filter;
 
 import com.shaurya.rate_limiter.entity.User;
+import com.shaurya.rate_limiter.exception.InvalidApiKeyException;
 import com.shaurya.rate_limiter.factory.RateLimiterFactory;
 import com.shaurya.rate_limiter.service.ApiKeyService;
 import com.shaurya.rate_limiter.strategy.RateLimiter;
@@ -40,7 +41,7 @@ public class RateLimiterFilter extends OncePerRequestFilter {
         User user;
         try{
             user = apiKeyService.validApiKey(apiKey);
-        } catch (RuntimeException ex){
+        } catch (InvalidApiKeyException ex){
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write(ex.getMessage());
             return;

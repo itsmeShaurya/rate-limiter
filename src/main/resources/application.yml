@@ -26,3 +26,8 @@ rate-limiter:
   algorithm: token-window
   bucket-capacity: 5
   refill-rate: 0.2
+
+
+logging:
+  level:
+    org.springframework.security: DEBUG

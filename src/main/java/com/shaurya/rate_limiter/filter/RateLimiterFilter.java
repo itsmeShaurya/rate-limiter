@@ -9,6 +9,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -17,40 +19,25 @@ import java.io.IOException;
 @Component
 public class RateLimiterFilter extends OncePerRequestFilter {
     private final RateLimiterFactory factory;
-    private final ApiKeyService apiKeyService;
 
     public RateLimiterFilter(RateLimiterFactory factory, ApiKeyService apiKeyService) {
         this.factory = factory;
-        this.apiKeyService = apiKeyService;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        // Registration endpoint should be accessible without an API key.
+        // Skip rate limiting for user registration because no authenticated user exists yet.
         if (request.getRequestURI().equals("/users") && request.getMethod().equalsIgnoreCase("POST")) {
             filterChain.doFilter(request, response);
             return;
         }
-
-        String apiKey = request.getHeader("X-API-Key");
-        if(apiKey == null || apiKey.isBlank()){
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("Missing X-API-Key header");
-            return;
-        }
-        User user;
-        try{
-            user = apiKeyService.validApiKey(apiKey);
-        } catch (InvalidApiKeyException ex){
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            response.getWriter().write(ex.getMessage());
-            return;
-        }
+        // Retrieve the authenticated user from Spring Security.
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) authentication.getPrincipal();
         RateLimiter rateLimiter = factory.getRateLimiter();
         boolean allowed = rateLimiter.allowRequests(user.getId().toString());
         if(!allowed){
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            response.getWriter().write("Too many requests");
+            response.sendError(429, "Too many requests");
             return;
         }
         filterChain.doFilter(request,response);

@@ -7,10 +7,17 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+    private final ApiKeyAuthenticationFilter apiKeyAuthenticationFilter;
+
+    public SecurityConfig(ApiKeyAuthenticationFilter apiKeyAuthenticationFilter) {
+        this.apiKeyAuthenticationFilter = apiKeyAuthenticationFilter;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -29,8 +36,14 @@ public class SecurityConfig {
                         // Every other endpoint requires authentication.
                         .anyRequest().authenticated()
                 )
-                // Enable HTTP Basic Authentication.
-                .httpBasic(Customizer.withDefaults());
+
+                // Add our custom API Key filter before UsernamePasswordAuthenticationFilter.
+                .addFilterBefore(
+                        apiKeyAuthenticationFilter,
+                        UsernamePasswordAuthenticationFilter.class
+                )
+                // Disable default HTTP Basic Authentication.
+                .httpBasic(httpBasic -> httpBasic.disable());
 
         return http.build();
     }

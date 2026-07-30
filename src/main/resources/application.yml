@@ -17,13 +17,21 @@ spring:
       hibernate:
         format_sql: true
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  profiles:
+    active: redis
+
 server:
   port: 8081
 
 rate-limiter:
   max-requests: 5
   window-size-seconds: 60
-  algorithm: token-window
+  algorithm: fixed-window
   bucket-capacity: 5
   refill-rate: 0.2
 

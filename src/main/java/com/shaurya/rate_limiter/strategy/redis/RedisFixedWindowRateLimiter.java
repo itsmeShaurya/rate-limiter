@@ -1,13 +1,14 @@
-package com.shaurya.rate_limiter.strategy;
+package com.shaurya.rate_limiter.strategy.redis;
 
 import com.shaurya.rate_limiter.config.RateLimiterProperties;
-import com.shaurya.rate_limiter.repository.ratelimiter.RedisFixedWindowRepository;
+import com.shaurya.rate_limiter.repository.ratelimiter.fixedwindow.RedisFixedWindowRepository;
+import com.shaurya.rate_limiter.strategy.RateLimiter;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Service("fixedWindowRateLimiter")
 @Profile("redis")
-public class RedisFixedWindowRateLimiter implements RateLimiter{
+public class RedisFixedWindowRateLimiter implements RateLimiter {
     private final RateLimiterProperties rateLimiterProperties;
     private final RedisFixedWindowRepository repository;
 

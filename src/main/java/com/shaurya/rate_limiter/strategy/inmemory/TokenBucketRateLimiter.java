@@ -1,14 +1,15 @@
-package com.shaurya.rate_limiter.strategy;
+package com.shaurya.rate_limiter.strategy.inmemory;
 
 import com.shaurya.rate_limiter.config.RateLimiterProperties;
 import com.shaurya.rate_limiter.model.tocketbucket.TokenBucket;
+import com.shaurya.rate_limiter.strategy.RateLimiter;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
-public class TokenBucketRateLimiter implements RateLimiter{
+public class TokenBucketRateLimiter implements RateLimiter {
     private final RateLimiterProperties properties;
 
     public TokenBucketRateLimiter(RateLimiterProperties properties) {

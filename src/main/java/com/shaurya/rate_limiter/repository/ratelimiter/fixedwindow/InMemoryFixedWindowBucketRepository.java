@@ -1,4 +1,4 @@
-package com.shaurya.rate_limiter.repository.ratelimiter;
+package com.shaurya.rate_limiter.repository.ratelimiter.fixedwindow;
 
 import com.shaurya.rate_limiter.model.fixedwindow.FixedWindowBucket;
 import org.springframework.context.annotation.Profile;
@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
 @Profile("memory")
-public class InMemoryFixedWindowBucketRepository implements FixedWindowBucketRepository{
+public class InMemoryFixedWindowBucketRepository implements FixedWindowBucketRepository {
     private final Map<String, FixedWindowBucket> userBuckets = new ConcurrentHashMap<>();
     @Override
     public FixedWindowBucket getBucket(String userId) {

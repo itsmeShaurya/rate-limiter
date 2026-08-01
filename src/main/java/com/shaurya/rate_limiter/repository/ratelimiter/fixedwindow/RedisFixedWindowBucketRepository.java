@@ -1,4 +1,4 @@
-package com.shaurya.rate_limiter.repository.ratelimiter;
+package com.shaurya.rate_limiter.repository.ratelimiter.fixedwindow;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.data.redis.core.StringRedisTemplate;

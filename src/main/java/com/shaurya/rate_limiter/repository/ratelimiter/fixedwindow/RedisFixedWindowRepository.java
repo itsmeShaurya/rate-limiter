@@ -1,4 +1,4 @@
-package com.shaurya.rate_limiter.repository.ratelimiter;
+package com.shaurya.rate_limiter.repository.ratelimiter.fixedwindow;
 
 public interface RedisFixedWindowRepository {
     /**

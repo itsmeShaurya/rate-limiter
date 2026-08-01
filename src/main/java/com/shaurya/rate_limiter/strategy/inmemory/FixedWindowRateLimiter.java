@@ -1,14 +1,12 @@
-package com.shaurya.rate_limiter.strategy;
+package com.shaurya.rate_limiter.strategy.inmemory;
 
 
 import com.shaurya.rate_limiter.config.RateLimiterProperties;
 import com.shaurya.rate_limiter.model.fixedwindow.FixedWindowBucket;
-import com.shaurya.rate_limiter.repository.ratelimiter.FixedWindowBucketRepository;
+import com.shaurya.rate_limiter.repository.ratelimiter.fixedwindow.FixedWindowBucketRepository;
+import com.shaurya.rate_limiter.strategy.RateLimiter;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service("fixedWindowRateLimiter")
 @Profile("memory")

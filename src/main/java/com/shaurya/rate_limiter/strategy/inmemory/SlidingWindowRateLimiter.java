@@ -1,28 +1,35 @@
-package com.shaurya.rate_limiter.strategy;
+package com.shaurya.rate_limiter.strategy.inmemory;
 
 import com.shaurya.rate_limiter.config.RateLimiterProperties;
 import com.shaurya.rate_limiter.model.slidingwindow.SlidingWindowBucket;
+import com.shaurya.rate_limiter.repository.ratelimiter.slidingwindow.SlidingWindowBucketRepository;
+import com.shaurya.rate_limiter.strategy.RateLimiter;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.util.Deque;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Service
-public class SlidingWindowRateLimiter implements RateLimiter{
+@Service("slidingWindowRateLimiter")
+@Profile("inmemory")
+public class SlidingWindowRateLimiter implements RateLimiter {
 
     private final RateLimiterProperties rateLimiterProperties;
+    private final SlidingWindowBucketRepository repository;
 
     private Map<String, SlidingWindowBucket> userBuckets = new ConcurrentHashMap<>();
 
-    public SlidingWindowRateLimiter(RateLimiterProperties rateLimiterProperties) {
+    public SlidingWindowRateLimiter(RateLimiterProperties rateLimiterProperties, SlidingWindowBucketRepository repository) {
         this.rateLimiterProperties = rateLimiterProperties;
+        this.repository = repository;
     }
 
 
     @Override
     public boolean allowRequests(String userId) {
-        SlidingWindowBucket bucket = userBuckets.computeIfAbsent(userId, key -> new SlidingWindowBucket());
+        // Get the user's bucket from In-Memory storage.
+        SlidingWindowBucket bucket = repository.getBucket(userId);
         synchronized (bucket){
             long currentTime = System.currentTimeMillis();
             long windowSizeMillis = rateLimiterProperties.getWindowSizeSeconds() * 1000;
@@ -40,6 +47,7 @@ public class SlidingWindowRateLimiter implements RateLimiter{
             // Check if user can make another request
             if(timestamps.size() < rateLimiterProperties.getMaxRequests()){
                 timestamps.addLast(currentTime);
+                repository.saveBucket(userId, bucket);
                 return true;
             }
         }

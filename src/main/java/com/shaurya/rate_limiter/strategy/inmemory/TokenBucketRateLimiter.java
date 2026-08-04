@@ -2,30 +2,29 @@ package com.shaurya.rate_limiter.strategy.inmemory;
 
 import com.shaurya.rate_limiter.config.RateLimiterProperties;
 import com.shaurya.rate_limiter.model.tocketbucket.TokenBucket;
+import com.shaurya.rate_limiter.repository.ratelimiter.tokenbucket.TokenBucketRepository;
 import com.shaurya.rate_limiter.strategy.RateLimiter;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Service
+@Service("tokenBucketRateLimiter")
+@Profile("inmemory")
 public class TokenBucketRateLimiter implements RateLimiter {
     private final RateLimiterProperties properties;
+    private final TokenBucketRepository repository;
 
-    public TokenBucketRateLimiter(RateLimiterProperties properties) {
+    public TokenBucketRateLimiter(RateLimiterProperties properties, TokenBucketRepository repository) {
         this.properties = properties;
+        this.repository = repository;
     }
-
-    private final Map<String, TokenBucket> userBuckets  = new ConcurrentHashMap<>();
 
     @Override
     public boolean allowRequests(String userId) {
-        // Get the existing bucket for the user.
-        // If this is the user's first request, create a new bucket.
-        // A new user starts with a full bucket.
-        TokenBucket bucket = userBuckets.computeIfAbsent(userId, key -> new TokenBucket(
-                properties.getBucketCapacity(),
-                System.currentTimeMillis()));
+        // Get the user's bucket from the repository.
+        TokenBucket bucket = repository.getBucket(userId);
 
         // Lock only this user's bucket so multiple requests
         // from the same user don't corrupt the token count.
@@ -52,6 +51,7 @@ public class TokenBucketRateLimiter implements RateLimiter {
             // If at least one token is available, allow the request.
             if(bucket.getAvailableTokens() >= 1){
                 bucket.setAvailableTokens(bucket.getAvailableTokens() - 1);
+                repository.saveBucket(userId, bucket);
                 return true;
             }
 
